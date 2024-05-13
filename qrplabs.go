@@ -45,7 +45,6 @@ func main() {
     }
   })
 
-  log.Println("Visiting page")
   c.Visit("https://www.qrp-labs.com/qcxmini/assembled.html")
   if order.list_index == "" {
     log.Fatalf("Order %s not found in build queue", order_id)

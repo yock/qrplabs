@@ -8,7 +8,6 @@ import (
 )
 
 func openDB() (*sql.DB, error) {
-  log.Println("Connecting to sqlite")
   db, err := sql.Open("sqlite3", "./updates.db")
   if err != nil {
     log.Fatal(err)
@@ -23,14 +22,12 @@ func openDB() (*sql.DB, error) {
     checked_at datetime not null
   );
   `
-  log.Println("Creating table if needed")
   _, err = db.Exec(sql)
 
   return db, err
 }
 
 func insert(record QRPLabsOrder) {
-  log.Println("Insertting record")
   db, err := openDB()
   if err != nil {
     log.Fatal(err)
@@ -46,30 +43,25 @@ func insert(record QRPLabsOrder) {
     return
   }
 
-  log.Println("Beginning transaction")
   tx, err := db.Begin()
   if err != nil {
     log.Fatal(err)
   }
   
   sql = "INSERT INTO updates (list_index, order_id, last_updated_at, checked_at) values(?, ?, ?, ?)"
-  log.Println("Preparing statement")
   stmt, err := tx.Prepare(sql)
   if err != nil {
     log.Fatal(err)
   }
   defer stmt.Close()
 
-  log.Println("executing insert")
   _, err = stmt.Exec(record.list_index, record.order_id, record.last_updated_at, record.checked_at)
   if err != nil {
     log.Fatal(err)
   }
 
-  log.Println("Committing transaction")
   err = tx.Commit()
   if err != nil {
     log.Fatal(err)
   }
-  log.Println("done")
 }
