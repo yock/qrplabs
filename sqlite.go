@@ -27,7 +27,7 @@ func openDB() (*sql.DB, error) {
   return db, err
 }
 
-func insert(record QRPLabsOrder) {
+func insert(record *QRPLabsOrder) {
   db, err := openDB()
   if err != nil {
     log.Fatal(err)
@@ -37,8 +37,10 @@ func insert(record QRPLabsOrder) {
   var last_updated_at time.Time
   sql := "select last_updated_at from updates order by checked_at desc limit 1"
   db.QueryRow(sql).Scan(&last_updated_at)
+
+  log.Printf("Most recent tracked update at %s\n", last_updated_at)
   
-  if last_updated_at.Compare(record.last_updated_at) < 1 {
+  if last_updated_at.Compare(record.last_updated_at) >= 1 {
     log.Println("No update since last checked")
     return
   }
